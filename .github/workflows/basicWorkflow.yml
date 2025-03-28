@@ -62,8 +62,11 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
+          
+          git checkout $GITHUB_HEAD_REF
+          
           git add README.md
           git commit -m "Add build status badge"
-          git push
+          git push origin $GITHUB_HEAD_REF
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
