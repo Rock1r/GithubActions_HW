@@ -49,7 +49,7 @@ jobs:
 
       - name: Add Build Status Badge to README
         run: |
-          BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/basicWorkflow.yml/badge.svg)](https://github.com/${{ github.repository }}/actions/workflows/basicWorkflow.yml)"
+          BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/basicWorkflow.yml/badge.svg)?branch=develop](https://github.com/${{ github.repository }}/actions/workflows/basicWorkflow.yml)"
           
           if ! grep -q "Build Status" README.md; then
             echo -e "\n## Build Status\n$BADGE" >> README.md
