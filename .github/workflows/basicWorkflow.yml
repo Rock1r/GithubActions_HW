@@ -59,7 +59,8 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-
+          
+          git pull --rebase origin HEAD:${{ github.event.pull_request.head.ref }}
           git add README.md
           git commit -m "Add build status badge" || echo "No changes to commit"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
