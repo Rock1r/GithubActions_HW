@@ -42,28 +42,24 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-          
+
       - name: Add Build Status Badge to README
         run: |
-          BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/main.yml/badge.svg)](https://github.com/${{ github.repository }}/actions/workflows/main.yml)"
+          BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/workflow.yml/badge.svg)](https://github.com/${{ github.repository }}/actions/workflows/workflow.yml)"
+          
           if ! grep -q "Build Status" README.md; then
             echo -e "\n## Build Status\n$BADGE" >> README.md
           fi
-          
+
       - name: Commit & Push Changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-          git checkout $GITHUB_HEAD_REF
-          
-          git diff --exit-code || git commit -am "Add build status badge"
-    
-          git push origin $GITHUB_HEAD_REF
+          git add README.md
+          git commit -m "Add build status badge" || echo "No changes to commit"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
