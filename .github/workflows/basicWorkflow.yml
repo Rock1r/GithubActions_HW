@@ -1,4 +1,3 @@
-# This is a basic workflow to help you get started with Actions
 
 name: workflow
 
@@ -7,9 +6,9 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   pull_request:
     branches: [ "develop" ]
-
-  # Allows you to run this workflow manually from the Actions tab
-
+    
+permissions:
+  contents: write
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -45,28 +44,25 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-          
+
       - name: Add Build Status Badge to README
         run: |
-          BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/main.yml/badge.svg)](https://github.com/${{ github.repository }}/actions/workflows/main.yml)"
+          BADGE="[![Build Status](https://github.com/${{ github.repository }}/actions/workflows/workflow.yml/badge.svg)](https://github.com/${{ github.repository }}/actions/workflows/workflow.yml)"
+          
           if ! grep -q "Build Status" README.md; then
             echo -e "\n## Build Status\n$BADGE" >> README.md
           fi
-          
+
       - name: Commit & Push Changes
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
           
-          git checkout $GITHUB_HEAD_REF
-          
           git add README.md
-          git commit -m "Add build status badge"
-          git push origin $GITHUB_HEAD_REF
+          git commit -m "Add build status badge" || echo "No changes to commit"
+          git pull --rebase origin $GITHUB_HEAD_REF || (git rebase --abort && git pull --no-rebase)
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
